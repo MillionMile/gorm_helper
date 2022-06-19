@@ -2,14 +2,16 @@ package gorm_helper
 
 import (
 	"testing"
+	"time"
 
 	"gorm.io/gorm"
 )
 
 type User struct {
-	Id       int    `gorm:"colum:id"`
-	NickName string `gorm:"column:nick_name"`
-	Phone    string `gorm:"column:phone"`
+	Id        int       `gorm:"colum:id"`
+	NickName  string    `gorm:"column:nick_name"`
+	Phone     string    `gorm:"column:phone"`
+	CreatedAt time.Time `gorm:"column:created_at"`
 }
 
 func (User) TableName() string {
@@ -22,10 +24,13 @@ func TestFilterWhere(t *testing.T) {
 		t.Errorf("GetGormDB failed %v", err)
 	}
 
+	createdAt, _ := time.Parse("2006-01-02 15:04:05", "2006-01-02 15:04:05")
+
 	type args struct {
-		id       int
-		nickName string
-		phone    string
+		id        int
+		nickName  string
+		phone     string
+		createdAt time.Time
 	}
 
 	tests := []struct {
@@ -70,6 +75,16 @@ func TestFilterWhere(t *testing.T) {
 			want: "SELECT * FROM `users` WHERE nick_name like ('%mile%')",
 		},
 		{
+			name: "filter equal time",
+			args: args{
+				id:        0,
+				nickName:  "",
+				phone:     "",
+				createdAt: createdAt,
+			},
+			want: "SELECT * FROM `users` WHERE created_at = ('2006-01-02 15:04:05')",
+		},
+		{
 			name: "comprehensive filter",
 			args: args{
 				id:       1,
@@ -86,6 +101,7 @@ func TestFilterWhere(t *testing.T) {
 					Scopes(FilterWhere("id = ?", tt.args.id)).
 					Scopes(FilterWhere("nick_name like ?", tt.args.nickName)).
 					Scopes(FilterWhere("phone = ?", tt.args.phone)).
+					Scopes(FilterWhere("created_at = ?", tt.args.createdAt)).
 					Find(&User{})
 			})
 			if gotSQL != tt.want {
