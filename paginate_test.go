@@ -47,7 +47,7 @@ func TestPaginate(t *testing.T) {
 			want: "SELECT * FROM `users` LIMIT 10",
 		},
 		{
-			name: "just page 3",
+			name: "jump page 3",
 			args: args{
 				page:     3,
 				pageSize: 10,
@@ -79,7 +79,7 @@ func TestPaginate(t *testing.T) {
 					Find(&User{})
 			})
 			if gotSQL != tt.want {
-				t.Errorf("GetRawSql() = %v, want %v", gotSQL, tt.want)
+				t.Errorf("getRawSql() = %v, want %v", gotSQL, tt.want)
 			}
 		})
 	}
