@@ -89,7 +89,7 @@ func TestFilterWhere(t *testing.T) {
 					Find(&User{})
 			})
 			if gotSQL != tt.want {
-				t.Errorf("GetRawSql() = %v, want %v", gotSQL, tt.want)
+				t.Errorf("getRawSql() = %v, want %v", gotSQL, tt.want)
 			}
 		})
 	}
